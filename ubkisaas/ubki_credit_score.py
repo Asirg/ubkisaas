@@ -26,7 +26,6 @@ def get_useful_credit_score_fields(ubki: dict) -> dict:
             "ubki_week_queries"     # Количество запросов в неделю
         ]
     }
-    # print(ubki)
     if not ubki:
         return res_dict
     try:
