@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ubkisaas",
-    version="0.1",
+    version="0.1.1",
     author="Asir Muminov",
     author_email="vojt.tieg295i@gmail.com",
     description="library for receiving UBKI data from the official website and parsing them and getting features for scoring analysis",

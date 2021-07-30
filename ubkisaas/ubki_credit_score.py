@@ -69,6 +69,5 @@ def check_null_value(value: str) -> bool:
 def coding_no_yes(arg: str) -> int:
     return 0 if (arg.lower() == "нет") else 1
 
-
 def coding_maxnowexp(arg: str) -> int:
     return 0 if (arg.lower() == "нет") else arg.split(" ")[0]
