@@ -30,8 +30,7 @@ class UbkiRequest ():
         if is_test:
             self.ubki_url = "https://test.ubki.ua/b2_api_xml/ubki/xml"
         else: 
-            self.ubki_url = "https://test.ubki.ua/b2_api_xml/ubki/xml"
-            # self.ubki_url = "https://secure.ubki.ua/b2_api_xml/ubki/xml"
+            self.ubki_url = "https://secure.ubki.ua/b2_api_xml/ubki/xml"
 
         config = self.get_keys()
         pref = "test" if is_test else "real"
@@ -67,8 +66,7 @@ class UbkiRequest ():
         if self.is_test:
             url = "https://test.ubki.ua/b2_api_xml/ubki/auth"
         else:
-            url = "https://test.ubki.ua/b2_api_xml/ubki/auth"
-            # url = "https://secure.ubki.ua/b2_api_xml/ubki/auth"
+            url = "https://secure.ubki.ua/b2_api_xml/ubki/auth"
         request_text = json.dumps(
         {
             "doc": {
