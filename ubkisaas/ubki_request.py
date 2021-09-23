@@ -5,7 +5,9 @@ from datetime import datetime
 from ast import literal_eval
 from typing import Optional
 import requests
+import pickle
 import json
+import os
 
 class UbkiRequest ():
     """ Класс инициализатор подключения к УБКИ.
@@ -28,20 +30,23 @@ class UbkiRequest ():
         if is_test:
             self.ubki_url = "https://test.ubki.ua/b2_api_xml/ubki/xml"
         else: 
-            self.ubki_url = "https://secure.ubki.ua/b2_api_xml/ubki/xml"
+            self.ubki_url = "https://test.ubki.ua/b2_api_xml/ubki/xml"
+            # self.ubki_url = "https://secure.ubki.ua/b2_api_xml/ubki/xml"
 
-        config, dotenv_file = self._env()
+        config = self.get_keys()
         pref = "test" if is_test else "real"
-
+        
         last_key = datetime.strptime(config[pref + '_last_key'],'%Y-%m-%d')
         now = datetime.now().date()
-
+        # print(pref + '_last_key')
+        # print(last_key)
         if last_key.date() == now:
             self.sessid = config[pref + '_key']
         else:
             self.sessid = self.ubki_authorization(login, password)
-            set_key(dotenv_file, pref + "_last_key", now.strftime('%Y-%m-%d'))
-            set_key(dotenv_file, pref + "_key", self.sessid)
+            config[pref + "_last_key"] = now.strftime('%Y-%m-%d')
+            config[pref + "_key"] = self.sessid
+            self.save_keys(config)
             print("Успешная Авторизация!!!")
 
     def ubki_authorization(self, login: str, password: str) -> str:
@@ -62,7 +67,8 @@ class UbkiRequest ():
         if self.is_test:
             url = "https://test.ubki.ua/b2_api_xml/ubki/auth"
         else:
-            url = "https://secure.ubki.ua/b2_api_xml/ubki/auth"
+            url = "https://test.ubki.ua/b2_api_xml/ubki/auth"
+            # url = "https://secure.ubki.ua/b2_api_xml/ubki/auth"
         request_text = json.dumps(
         {
             "doc": {
@@ -141,15 +147,22 @@ class UbkiRequest ():
         "</doc>"
         return requests.request("POST", self.ubki_url, data=request_text.encode('utf-8')).text
 
-    def _env(self):
+    def get_keys(self) -> dict:
         """ 
         Метод подключения к .env и получения необходимых переменных среды, для работы
         """
-        dotenv_file = find_dotenv()
-        if dotenv_file == '': # Создание .env файла в случае отсуствия оного
-                with open('.env', 'w') as file:
-                    file.write("test_key=1\nreal_key=1\n")
-                    file.write('test_last_key=2000-1-1\nreal_last_key=2000-1-1')
-                dotenv_file = find_dotenv()
-        load_dotenv(dotenv_file)
-        return dotenv_values(), dotenv_file
+        if not os.path.exists('keys'): # Создание .env файла в случае отсуствия оного
+            keys = {"test_key":"", "real_key":"", "test_last_key":"2000-01-01", "real_last_key":"2000-01-01"}
+            with open('keys', 'wb') as file:
+                pickle.dump(keys, file)
+        else:
+            with open('keys', 'rb') as file:
+                keys = pickle.load(file)
+        return keys
+    
+    def save_keys(self, keys:dict):
+        """ 
+        """
+        with open('keys', 'wb') as file:
+            pickle.dump(keys, file)
+        return keys
